@@ -1,0 +1,59 @@
+<div class="smartq-container">
+  <div class="smartq-header">
+    <h2>SmartQ</h2>
+    <p>Skip the line. Know your wait, before you walk in.</p>
+  </div>
+  <div class="smartq-alert" ng-if="c.data.error">
+    {{c.data.error}}
+  </div>
+
+  <!-- Service point selection: shown whenever there is no ACTIVE token -->
+  <div class="smartq-grid" ng-if="!c.data.hasActiveToken">
+    <div class="smartq-card" ng-repeat="sp in c.data.servicePoints">
+      <div class="card-top">
+        <h3>{{sp.name}}</h3>
+        <span class="wait-badge" ng-class="{'wait-low': sp.waiting_count <= 2, 'wait-high': sp.waiting_count > 5}">
+          {{sp.waiting_count}} waiting
+        </span>
+      </div>
+      <div class="card-location">{{sp.location}}</div>
+      <div class="card-hours">🕒 {{sp.hours_start}} – {{sp.hours_end}}</div>
+      <div class="card-description">{{sp.description}}</div>
+      <div class="card-eta">~{{sp.avg_service_time * sp.waiting_count}} min if you join now</div>
+      <div class="card-actions" ng-if="c.selectedSp !== sp.sys_id">
+        <button type="button" class="btn-primary" ng-click="c.selectSp(sp.sys_id)">Join Queue</button>
+      </div>
+      <div class="card-join-options" ng-if="c.selectedSp === sp.sys_id">
+        <button type="button" class="btn-option" ng-click="c.joinQueue(sp.sys_id, 'walkin')">Join Now</button>
+        <button type="button" class="btn-option-outline" ng-click="c.selectedSp = null">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Active/completed token status card: shown BELOW the grid -->
+  <div class="smartq-status-card" ng-if="c.data.myToken">
+    <div class="status-left">
+      <div class="status-label">Your Token</div>
+      <div class="status-number">{{c.data.myToken.number}}</div>
+      <div class="status-location">{{c.data.myToken.service_point}}</div>
+    </div>
+
+    <div class="status-right" ng-if="c.data.myToken.status !== 'completed'">
+      <div class="status-metric">
+        <div class="metric-value">{{c.data.myToken.position}}</div>
+        <div class="metric-label">people ahead</div>
+      </div>
+      <div class="status-metric">
+        <div class="metric-value">{{c.data.myToken.wait}}<span class="unit">min</span></div>
+        <div class="metric-label">est. wait</div>
+      </div>
+      <span class="status-pill status-{{c.data.myToken.status}}">{{c.data.myToken.status}}</span>
+    </div>
+
+    <div class="status-completed-msg" ng-if="c.data.myToken.status === 'completed'">
+      ✅ Service completed! Scroll down to rate your experience.
+    </div>
+
+    <button type="button" class="btn-cancel" ng-click="c.cancelToken()" ng-if="c.data.myToken.status !== 'completed'">Cancel</button>
+  </div>
+</div>

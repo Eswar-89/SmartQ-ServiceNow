@@ -1,0 +1,22 @@
+<div>
+<div class="smartq-feedback-container" ng-if="c.data.token">
+  <div ng-if="!c.data.alreadySubmitted" class="feedback-card">
+    <h3>Service Completed!</h3>
+    <p>How was your experience at <strong>{{c.data.token.service_point}}</strong>?</p>
+    <div class="star-row">
+      <span class="star" ng-repeat="star in [1,2,3,4,5]"
+            ng-click="c.setRating(star)"
+            ng-class="{'star-filled': star <= c.selectedRating}">★</span>
+    </div>
+    <textarea class="feedback-comments" ng-model="c.comments"
+              placeholder="Any comments? (optional)" rows="3"></textarea>
+    <button type="button" class="btn-submit" ng-click="c.submitFeedback()" ng-disabled="c.submitting">
+      {{c.submitting ? 'Submitting...' : 'Submit Feedback'}}
+    </button>
+  </div>
+  <div ng-if="c.data.alreadySubmitted" class="feedback-thanks">
+    <h3>Thanks for your feedback!</h3>
+    <p>You rated {{c.data.token.service_point}} {{c.data.submittedRating}} / 5.</p>
+  </div>
+</div>
+</div>

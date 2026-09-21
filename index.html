@@ -1,0 +1,439 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SmartQ — Live Demo | Smart Queue Management for Campus</title>
+  <meta name="description" content="SmartQ is a ServiceNow-native smart queue system for campus service points. Skip the line — know your wait before you walk in. Built for HackNow 2026." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --indigo: #4f46e5; --indigo-dark: #4338ca; --indigo-deeper: #3730a3;
+      --indigo-light: #eef2ff; --indigo-pale: #c7d2fe;
+      --bg: #f5f6fa; --card: #ffffff; --border: #eaecf0; --text: #111827; --muted: #6b7280;
+      --green: #16a34a; --green-bg: #dcfce7; --amber: #d97706; --amber-bg: #fef9c3;
+      --red: #b91c1c; --red-bg: #fee2e2; --blue: #1d4ed8; --blue-bg: #dbeafe;
+      --radius: 14px; --shadow-sm: 0 1px 4px rgba(0,0,0,0.06); --shadow-md: 0 4px 18px rgba(79,70,229,0.14);
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    .nav { background: #0f0f1a; padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 58px; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo { width: 32px; height: 32px; background: linear-gradient(135deg,#6366f1,#4f46e5); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 900; color: #fff; }
+    .nav-title { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.3px; }
+    .nav-badge { background: rgba(99,102,241,0.2); color: #a5b4fc; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .nav-tabs { display: flex; gap: 4px; }
+    .nav-tab { background: none; border: none; color: #9ca3af; font-size: 13px; font-weight: 600; padding: 7px 14px; border-radius: 8px; cursor: pointer; transition: all 0.18s; font-family: inherit; }
+    .nav-tab:hover { color: #fff; background: rgba(255,255,255,0.06); }
+    .hero { background: linear-gradient(135deg, #0f0f1a 0%, #1a1040 50%, #0f0f1a 100%); padding: 72px 32px 80px; text-align: center; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(99,102,241,0.22) 0%, transparent 70%); pointer-events: none; }
+    .hero-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.35); color: #a5b4fc; font-size: 12px; font-weight: 700; padding: 5px 14px; border-radius: 999px; margin-bottom: 24px; letter-spacing: 0.05em; }
+    .hero h1 { font-size: clamp(32px,5vw,58px); font-weight: 900; color: #fff; line-height: 1.08; letter-spacing: -1.5px; margin-bottom: 18px; }
+    .hero h1 em { font-style: normal; background: linear-gradient(90deg,#818cf8,#a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: 17px; color: #9ca3af; max-width: 520px; margin: 0 auto 36px; line-height: 1.7; }
+    .hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn-hero-primary { background: linear-gradient(135deg,#6366f1,#4f46e5); color: #fff; border: none; padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 18px rgba(79,70,229,0.4); transition: transform 0.15s, box-shadow 0.15s; }
+    .btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(79,70,229,0.5); }
+    .btn-hero-outline { background: rgba(255,255,255,0.06); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.14); padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .btn-hero-outline:hover { background: rgba(255,255,255,0.1); }
+    .stats-bar { background: #fff; border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; gap: 0; justify-content: center; flex-wrap: wrap; }
+    .stat-item { padding: 0 32px; border-right: 1px solid var(--border); text-align: center; }
+    .stat-item:last-child { border-right: none; }
+    .stat-value { font-size: 26px; font-weight: 900; color: var(--indigo); }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+    .main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+    .section-tabs { display: flex; gap: 8px; margin-bottom: 28px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 6px; }
+    .section-tab { flex: 1; background: none; border: none; padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; color: var(--muted); cursor: pointer; font-family: inherit; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .section-tab:hover { color: var(--indigo); background: var(--indigo-light); }
+    .section-tab.active { background: var(--indigo); color: #fff; }
+    .panel { display: none; animation: fadeIn 0.25s ease; }
+    .panel.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .token-banner { background: linear-gradient(135deg,#4338ca 0%,#6366f1 100%); border-radius: 18px; padding: 24px 28px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: var(--shadow-md); position: relative; overflow: hidden; }
+    .token-banner::after { content: ''; position: absolute; top: -30px; right: -30px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,0.06); }
+    .token-banner.hidden { display: none; }
+    .tbanner-left { color: #fff; }
+    .tbanner-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #c7d2fe; margin-bottom: 4px; }
+    .tbanner-number { font-size: 36px; font-weight: 900; color: #fff; line-height: 1; }
+    .tbanner-location { font-size: 14px; color: #e0e7ff; margin-top: 4px; }
+    .tbanner-metrics { display: flex; gap: 28px; align-items: center; }
+    .tbanner-metric { text-align: center; }
+    .tbanner-metric-val { font-size: 24px; font-weight: 800; color: #fff; }
+    .tbanner-metric-val sup { font-size: 13px; font-weight: 500; }
+    .tbanner-metric-lbl { font-size: 11px; color: #c7d2fe; text-transform: uppercase; letter-spacing: 0.05em; }
+    .tbanner-pill { background: rgba(255,255,255,0.18); color: #fff; padding: 5px 14px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: capitalize; }
+    .tbanner-pill.called { background: #fbbf24; color: #78350f; }
+    .btn-cancel-token { background: rgba(255,255,255,0.12); color: #fff; border: 1px solid rgba(255,255,255,0.25); padding: 9px 18px; border-radius: 9px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .btn-cancel-token:hover { background: rgba(255,255,255,0.22); }
+    .service-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 20px; }
+    .sp-card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 22px; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s; }
+    .sp-card:hover { box-shadow: 0 8px 24px rgba(79,70,229,0.1); transform: translateY(-2px); border-color: var(--indigo-pale); }
+    .sp-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .sp-card-name { font-size: 17px; font-weight: 700; color: var(--text); }
+    .wait-badge { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    .wait-low { background: var(--green-bg); color: var(--green); }
+    .wait-mid { background: var(--amber-bg); color: var(--amber); }
+    .wait-high { background: var(--red-bg); color: var(--red); }
+    .sp-card-loc, .sp-card-hours { color: var(--muted); font-size: 13px; margin-bottom: 4px; }
+    .sp-card-hours { margin-bottom: 12px; }
+    .sp-card-desc { color: #4b5563; font-size: 13px; margin-bottom: 14px; flex: 1; line-height: 1.5; }
+    .sp-card-eta { font-size: 14px; font-weight: 700; color: var(--indigo); margin-bottom: 16px; }
+    .sp-card-eta span { font-weight: 400; color: var(--muted); font-size: 13px; }
+    .btn-join { width: 100%; background: var(--indigo); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; transition: background 0.15s; }
+    .btn-join:hover { background: var(--indigo-dark); }
+    .btn-join:disabled { background: #a5a6f6; cursor: not-allowed; }
+    .join-options { display: flex; gap: 10px; }
+    .btn-join-now { flex: 1; background: var(--indigo); color: #fff; border: none; padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-join-now:hover { background: var(--indigo-dark); }
+    .btn-cancel-join { flex: 1; background: #fff; color: var(--indigo); border: 1.5px solid var(--indigo); padding: 12px; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .btn-cancel-join:hover { background: var(--indigo-light); }
+    .call-next-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+    .call-next-card { background: #0f0f1a; color: #fff; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; gap: 14px; }
+    .call-next-sp { font-size: 14px; font-weight: 600; }
+    .btn-call-next { background: var(--indigo); color: #fff; border: none; padding: 8px 15px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-call-next:hover { background: var(--indigo-dark); }
+    .token-table { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .token-table-head { display: grid; grid-template-columns: 1fr 1.4fr 1.4fr 1fr 1fr 1.8fr; padding: 12px 18px; background: #f9fafb; border-bottom: 1px solid var(--border); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+    .token-row { display: grid; grid-template-columns: 1fr 1.4fr 1.4fr 1fr 1fr 1.8fr; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); font-size: 14px; }
+    .token-row:last-child { border-bottom: none; }
+    .token-row.row-called { background: #fffbeb; }
+    .token-row.row-in_service { background: #eff6ff; }
+    .token-num { font-weight: 800; font-size: 15px; }
+    .status-badge { display: inline-block; padding: 4px 11px; border-radius: 999px; font-size: 12px; font-weight: 700; text-transform: capitalize; }
+    .s-waiting { background: #f3f4f6; color: #4b5563; }
+    .s-called { background: var(--amber-bg); color: var(--amber); }
+    .s-in_service { background: var(--blue-bg); color: var(--blue); }
+    .s-completed { background: var(--green-bg); color: var(--green); }
+    .token-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+    .btn-act { border: none; padding: 6px 11px; border-radius: 7px; font-size: 12px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-start { background: var(--indigo); color: #fff; }
+    .btn-complete { background: var(--green); color: #fff; }
+    .btn-noshow { background: #fff; color: var(--red); border: 1px solid #fecaca; }
+    .feedback-wrap { max-width: 500px; margin: 0 auto; }
+    .feedback-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 20px; padding: 36px 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.06); text-align: center; }
+    .feedback-icon { font-size: 48px; margin-bottom: 16px; }
+    .feedback-card h2 { font-size: 22px; font-weight: 800; color: var(--text); margin-bottom: 8px; }
+    .feedback-card p { color: var(--muted); font-size: 14px; margin-bottom: 24px; line-height: 1.6; }
+    .feedback-card strong { color: var(--indigo); }
+    .star-row { font-size: 40px; margin-bottom: 20px; cursor: pointer; display: flex; justify-content: center; gap: 6px; }
+    .star { color: #d1d5db; transition: color 0.15s, transform 0.15s; display: inline-block; }
+    .star:hover, .star.filled { color: #f59e0b; transform: scale(1.15); }
+    .feedback-textarea { width: 100%; border: 1.5px solid var(--border); border-radius: 10px; padding: 12px 14px; font-size: 14px; font-family: inherit; resize: vertical; margin-bottom: 18px; color: var(--text); }
+    .feedback-textarea:focus { outline: none; border-color: var(--indigo); }
+    .btn-submit-feedback { width: 100%; background: var(--indigo); color: #fff; border: none; padding: 13px; border-radius: 10px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+    .btn-submit-feedback:hover { background: var(--indigo-dark); }
+    .btn-submit-feedback:disabled { background: #a5a6f6; cursor: not-allowed; }
+    .feedback-thanks { background: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 20px; padding: 40px 32px; text-align: center; display: none; }
+    .feedback-thanks.show { display: block; animation: fadeIn 0.3s ease; }
+    .thanks-icon { font-size: 56px; margin-bottom: 16px; }
+    .feedback-thanks h2 { font-size: 22px; font-weight: 800; color: var(--green); margin-bottom: 8px; }
+    .feedback-thanks p { color: #4b5563; font-size: 15px; }
+    .how-section { background: #fff; border-top: 1px solid var(--border); padding: 60px 32px; }
+    .how-inner { max-width: 1000px; margin: 0 auto; }
+    .how-section h2 { text-align: center; font-size: 28px; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 8px; }
+    .how-sub { text-align: center; color: var(--muted); font-size: 15px; margin-bottom: 48px; }
+    .how-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 28px; }
+    .how-card { text-align: center; padding: 28px 20px; background: var(--bg); border-radius: 14px; }
+    .how-step { width: 44px; height: 44px; background: var(--indigo); color: #fff; border-radius: 50%; font-size: 18px; font-weight: 900; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; }
+    .how-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+    .how-card p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+    .footer { background: #0f0f1a; color: #9ca3af; text-align: center; padding: 28px; font-size: 13px; }
+    .footer a { color: #818cf8; text-decoration: none; }
+    .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; display: inline-block; animation: pulse-dot 1.5s infinite; }
+    @keyframes pulse-dot { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.5; transform:scale(0.7); } }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px); background: #0f0f1a; color: #fff; padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 600; box-shadow: 0 6px 24px rgba(0,0,0,0.3); z-index: 999; transition: transform 0.3s cubic-bezier(.34,1.56,.64,1); }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    @media (max-width: 680px) { .nav-tabs { display: none; } .stat-item { padding: 0 16px; } .hero { padding: 48px 20px 56px; } .token-table-head, .token-row { grid-template-columns: 1fr 1fr 1fr 1fr; } }
+  </style>
+</head>
+<body>
+<nav class="nav">
+  <a class="nav-brand" href="#">
+    <div class="nav-logo">S</div>
+    <span class="nav-title">SmartQ</span>
+    <span class="nav-badge">Demo</span>
+  </a>
+  <div class="nav-tabs">
+    <button class="nav-tab" onclick="scrollToDemo()">Try the Demo</button>
+    <a href="https://github.com/hem187/SmartQ-ServiceNow" target="_blank" style="text-decoration:none">
+      <button class="nav-tab">GitHub &#8599;</button>
+    </a>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-chip">
+    <span class="live-dot"></span>
+    HackNow 2026 &middot; ServiceNow University India &middot; PS#15
+  </div>
+  <h1>Skip the line.<br/><em>Know your wait</em>,<br/>before you walk in.</h1>
+  <p>SmartQ gives students live queue position and estimated wait times for every campus service point &mdash; before they leave their room.</p>
+  <div class="hero-actions">
+    <button class="btn-hero-primary" onclick="scrollToDemo()">&#x1F680; Try Interactive Demo</button>
+    <a href="https://github.com/hem187/SmartQ-ServiceNow" target="_blank" style="text-decoration:none">
+      <button class="btn-hero-outline">View Source Code &#8599;</button>
+    </a>
+  </div>
+</section>
+
+<div class="stats-bar">
+  <div class="stat-item"><div class="stat-value" id="stat-tokens">24</div><div class="stat-label">Tokens today</div></div>
+  <div class="stat-item"><div class="stat-value">4.2</div><div class="stat-label">Avg wait (min)</div></div>
+  <div class="stat-item"><div class="stat-value">3</div><div class="stat-label">Service Points</div></div>
+  <div class="stat-item"><div class="stat-value">4.8 &#9733;</div><div class="stat-label">Avg rating</div></div>
+</div>
+
+<div class="main" id="demo">
+  <div class="section-tabs">
+    <button class="section-tab active" id="tab-student" onclick="showPanel('student')"><span>&#x1F393;</span> Student View</button>
+    <button class="section-tab" id="tab-staff" onclick="showPanel('staff')"><span>&#x1F6CE;&#xFE0F;</span> Staff Console</button>
+    <button class="section-tab" id="tab-feedback" onclick="showPanel('feedback')"><span>&#x2B50;</span> Feedback</button>
+  </div>
+
+  <div class="panel active" id="panel-student">
+    <div class="token-banner hidden" id="tokenBanner">
+      <div class="tbanner-left">
+        <div class="tbanner-eyebrow">Your Token</div>
+        <div class="tbanner-number" id="bannerNum">TKN-0014</div>
+        <div class="tbanner-location" id="bannerLoc">Central Library</div>
+      </div>
+      <div class="tbanner-metrics">
+        <div class="tbanner-metric">
+          <div class="tbanner-metric-val" id="bannerPos">3</div>
+          <div class="tbanner-metric-lbl">ahead</div>
+        </div>
+        <div class="tbanner-metric">
+          <div class="tbanner-metric-val" id="bannerWait">12<sup>min</sup></div>
+          <div class="tbanner-metric-lbl">est. wait</div>
+        </div>
+        <div class="tbanner-pill" id="bannerStatus">Waiting</div>
+      </div>
+      <button class="btn-cancel-token" onclick="cancelToken()">Cancel</button>
+    </div>
+    <div class="service-grid" id="serviceGrid"></div>
+  </div>
+
+  <div class="panel" id="panel-staff">
+    <div class="call-next-row" id="callNextRow"></div>
+    <div class="token-table">
+      <div class="token-table-head">
+        <div>Token</div><div>Student</div><div>Service Point</div><div>Status</div><div>Queue</div><div>Actions</div>
+      </div>
+      <div id="staffTokenList"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="panel-feedback">
+    <div class="feedback-wrap">
+      <div class="feedback-card" id="feedbackCard">
+        <div class="feedback-icon">&#x1F3DB;&#xFE0F;</div>
+        <h2>Service Completed!</h2>
+        <p>How was your experience at <strong>Central Library</strong>?<br/>Your token <strong>TKN-0011</strong> has been served.</p>
+        <div class="star-row" id="starRow">
+          <span class="star" data-v="1" onclick="setRating(1)">&#9733;</span>
+          <span class="star" data-v="2" onclick="setRating(2)">&#9733;</span>
+          <span class="star" data-v="3" onclick="setRating(3)">&#9733;</span>
+          <span class="star" data-v="4" onclick="setRating(4)">&#9733;</span>
+          <span class="star" data-v="5" onclick="setRating(5)">&#9733;</span>
+        </div>
+        <textarea class="feedback-textarea" id="feedbackText" rows="3" placeholder="Any comments? (optional)"></textarea>
+        <button class="btn-submit-feedback" id="btnSubmitFeedback" onclick="submitFeedback()" disabled>Submit Feedback</button>
+      </div>
+      <div class="feedback-thanks" id="feedbackThanks">
+        <div class="thanks-icon">&#x1F389;</div>
+        <h2>Thanks for your feedback!</h2>
+        <p id="thanksMsg">You rated Central Library <strong>5 / 5</strong>. See you next time!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="how-section">
+  <div class="how-inner">
+    <h2>How SmartQ Works</h2>
+    <p class="how-sub">Built natively on the ServiceNow platform &mdash; no third-party infrastructure needed.</p>
+    <div class="how-grid">
+      <div class="how-card"><div class="how-step">1</div><h3>Browse &amp; Join</h3><p>Students check live queue depth and estimated wait from their phone before heading out.</p></div>
+      <div class="how-card"><div class="how-step">2</div><h3>Live Updates</h3><p>Position and ETA refresh every 6 seconds via ServiceNow Server Script polling &mdash; no manual refresh needed.</p></div>
+      <div class="how-card"><div class="how-step">3</div><h3>Staff Calls Next</h3><p>Staff click "Call Next" in the console. Flow Designer instantly emails the student their token is ready.</p></div>
+      <div class="how-card"><div class="how-step">4</div><h3>Feedback Loop</h3><p>After service, students rate their experience. ACLs ensure data privacy &mdash; each student sees only their own records.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  Built for <strong style="color:#e5e7eb">HackNow 2026</strong> &middot; ServiceNow University, India &middot;
+  <a href="https://github.com/hem187/SmartQ-ServiceNow" target="_blank">github.com/hem187/SmartQ-ServiceNow</a><br/><br/>
+  <span style="font-size:11px;color:#4b5563">This page is an interactive UI prototype. The actual app runs on a ServiceNow instance.</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const servicePoints = [
+    { id:'sp1', name:'Central Library', location:'&#x1F4CD; Block A, Ground Floor', hours:'9:00 AM - 6:00 PM', desc:'Book issue/return, ID card, reference requests, and printing services.', waiting:3, avgTime:4 },
+    { id:'sp2', name:'Fee Counter', location:'&#x1F4CD; Admin Block, Room 101', hours:'10:00 AM - 4:00 PM', desc:'Fee payments, receipts, scholarships, and refund queries.', waiting:7, avgTime:5 },
+    { id:'sp3', name:'Placement Cell', location:'&#x1F4CD; Block C, Second Floor', hours:'10:00 AM - 5:00 PM', desc:'Resume reviews, offer letters, internship certificates, and counselling.', waiting:2, avgTime:8 },
+  ];
+  let staffTokens = [
+    { id:'t1', num:'TKN-0009', student:'Priya S.', sp:'Central Library', status:'called', pos:0, wait:0 },
+    { id:'t2', num:'TKN-0010', student:'Rohit M.', sp:'Fee Counter', status:'in_service', pos:0, wait:0 },
+    { id:'t3', num:'TKN-0011', student:'Anjali R.', sp:'Central Library', status:'waiting', pos:1, wait:4 },
+    { id:'t4', num:'TKN-0012', student:'Karan P.', sp:'Fee Counter', status:'waiting', pos:2, wait:10 },
+    { id:'t5', num:'TKN-0013', student:'Sneha T.', sp:'Placement Cell', status:'waiting', pos:1, wait:8 },
+  ];
+  let selectedSpId=null, activeToken=null, selectedRating=0, tokenCounter=14;
+
+  function showPanel(n){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.section-tab').forEach(t=>t.classList.remove('active'));
+    document.getElementById('panel-'+n).classList.add('active');
+    document.getElementById('tab-'+n).classList.add('active');
+  }
+  function scrollToDemo(){ document.getElementById('demo').scrollIntoView({behavior:'smooth'}); }
+
+  function renderServiceGrid(){
+    const grid=document.getElementById('serviceGrid'); grid.innerHTML='';
+    servicePoints.forEach(sp=>{
+      const eta=sp.avgTime*sp.waiting;
+      const bc=sp.waiting<=2?'wait-low':sp.waiting>5?'wait-high':'wait-mid';
+      const isSel=selectedSpId===sp.id, hasTok=!!activeToken;
+      const card=document.createElement('div'); card.className='sp-card';
+      card.innerHTML=`
+        <div class="sp-card-top"><span class="sp-card-name">${sp.name}</span><span class="wait-badge ${bc}">${sp.waiting} waiting</span></div>
+        <div class="sp-card-loc">${sp.location}</div>
+        <div class="sp-card-hours">&#x1F552; ${sp.hours}</div>
+        <div class="sp-card-desc">${sp.desc}</div>
+        <div class="sp-card-eta">~${eta} min <span>if you join now</span></div>
+        <div>${isSel
+          ?`<div class="join-options"><button class="btn-join-now" onclick="joinQueue('${sp.id}')">Join Now</button><button class="btn-cancel-join" onclick="cancelSelect()">Cancel</button></div>`
+          :`<button class="btn-join" ${hasTok?'disabled title="You already have an active token"':''} onclick="selectSp('${sp.id}')">Join Queue</button>`
+        }</div>`;
+      grid.appendChild(card);
+    });
+  }
+  function selectSp(id){ selectedSpId=id; renderServiceGrid(); }
+  function cancelSelect(){ selectedSpId=null; renderServiceGrid(); }
+  function joinQueue(spId){
+    const sp=servicePoints.find(s=>s.id===spId);
+    const num='TKN-00'+tokenCounter++;
+    sp.waiting++;
+    activeToken={num,sp:sp.name,spId,pos:sp.waiting,wait:sp.avgTime*sp.waiting};
+    selectedSpId=null;
+    document.getElementById('bannerNum').textContent=num;
+    document.getElementById('bannerLoc').textContent=sp.name;
+    updateBannerMetrics();
+    document.getElementById('tokenBanner').classList.remove('hidden');
+    staffTokens.push({id:'tnew-'+tokenCounter,num,student:'You (Demo)',sp:sp.name,status:'waiting',pos:activeToken.pos,wait:activeToken.wait});
+    renderServiceGrid(); renderStaffConsole();
+    showToast('&#x1F39F;&#xFE0F; '+num+' issued - '+sp.name);
+    startCountdown();
+  }
+  function cancelToken(){
+    if(!activeToken)return;
+    const sp=servicePoints.find(s=>s.id===activeToken.spId);
+    if(sp&&sp.waiting>0)sp.waiting--;
+    activeToken=null;
+    document.getElementById('tokenBanner').classList.add('hidden');
+    renderServiceGrid(); renderStaffConsole();
+    showToast('&#x274C; Token cancelled');
+  }
+  function updateBannerMetrics(){
+    if(!activeToken)return;
+    document.getElementById('bannerPos').textContent=activeToken.pos;
+    document.getElementById('bannerWait').innerHTML=activeToken.wait+'<sup>min</sup>';
+  }
+  function startCountdown(){
+    const tick=setInterval(()=>{
+      if(!activeToken){clearInterval(tick);return;}
+      if(activeToken.pos>0){activeToken.pos=Math.max(0,activeToken.pos-1);activeToken.wait=Math.max(0,activeToken.wait-4);updateBannerMetrics();}
+      if(activeToken.pos===0){
+        document.getElementById('bannerStatus').textContent='Called';
+        document.getElementById('bannerStatus').classList.add('called');
+        clearInterval(tick);
+        showToast('&#x1F4E3; Your token is being called! Head to the counter.');
+      }
+    },8000);
+  }
+
+  function renderStaffConsole(){
+    document.getElementById('callNextRow').innerHTML=servicePoints.map(sp=>`
+      <div class="call-next-card"><span class="call-next-sp">${sp.name}</span><button class="btn-call-next" onclick="callNext('${sp.id}')">Call Next</button></div>`).join('');
+    const list=document.getElementById('staffTokenList');
+    if(!staffTokens.length){list.innerHTML='<div style="padding:40px;text-align:center;color:#9ca3af;font-size:14px;">No active tokens right now.</div>';return;}
+    list.innerHTML=staffTokens.map(t=>`
+      <div class="token-row row-${t.status}">
+        <div class="token-num">${t.num}</div>
+        <div style="font-size:13px;color:#4b5563">${t.student}</div>
+        <div style="font-size:13px">${t.sp}</div>
+        <div><span class="status-badge s-${t.status}">${t.status.replace('_',' ')}</span></div>
+        <div style="font-size:13px;color:#6b7280">${t.pos>0?'Pos '+t.pos+' &middot; '+t.wait+' min':'&mdash;'}</div>
+        <div class="token-actions">
+          ${t.status==='called'?`<button class="btn-act btn-start" onclick="startService('${t.id}')">Start</button><button class="btn-act btn-noshow" onclick="noShow('${t.id}')">No Show</button>`:''}
+          ${t.status==='in_service'?`<button class="btn-act btn-complete" onclick="completeToken('${t.id}')">Complete</button>`:''}
+        </div>
+      </div>`).join('');
+  }
+  function callNext(spId){
+    const sp=servicePoints.find(s=>s.id===spId);
+    const next=staffTokens.find(t=>t.sp===sp.name&&t.status==='waiting');
+    if(!next){showToast('No waiting tokens for '+sp.name);return;}
+    next.status='called'; next.pos=0; next.wait=0;
+    renderStaffConsole(); showToast('&#x1F4E3; Called '+next.num+' at '+sp.name);
+  }
+  function startService(id){
+    const t=staffTokens.find(x=>x.id===id);
+    if(t){t.status='in_service';renderStaffConsole();showToast('&#x1F527; Service started for '+t.num);}
+  }
+  function completeToken(id){
+    const t=staffTokens.find(x=>x.id===id); if(!t)return;
+    t.status='completed';
+    let pos=1;
+    staffTokens.filter(x=>x.sp===t.sp&&x.status==='waiting').forEach(x=>{
+      const sp=servicePoints.find(s=>s.name===x.sp);
+      x.pos=pos++; x.wait=x.pos*(sp?sp.avgTime:5);
+    });
+    renderStaffConsole();
+    setTimeout(()=>{staffTokens=staffTokens.filter(x=>x.id!==id);renderStaffConsole();},2000);
+    showToast('&#x2705; '+t.num+' marked complete');
+  }
+  function noShow(id){
+    const t=staffTokens.find(x=>x.id===id); if(!t)return;
+    staffTokens=staffTokens.filter(x=>x.id!==id);
+    renderStaffConsole(); showToast('&#x1F6AB; No-show recorded for '+t.num);
+  }
+
+  function setRating(val){
+    selectedRating=val;
+    document.querySelectorAll('.star').forEach(s=>s.classList.toggle('filled',parseInt(s.dataset.v)<=val));
+    document.getElementById('btnSubmitFeedback').disabled=false;
+  }
+  function submitFeedback(){
+    const btn=document.getElementById('btnSubmitFeedback');
+    btn.disabled=true; btn.textContent='Submitting...';
+    setTimeout(()=>{
+      document.getElementById('feedbackCard').style.display='none';
+      const t=document.getElementById('feedbackThanks'); t.classList.add('show');
+      document.getElementById('thanksMsg').innerHTML='You rated <strong>Central Library</strong> <strong>'+selectedRating+' / 5 &#9733;</strong>. See you next time!';
+      showToast('&#x2B50; Feedback submitted. Thank you!');
+    },900);
+  }
+
+  let toastTimer;
+  function showToast(msg){
+    const t=document.getElementById('toast'); t.innerHTML=msg; t.classList.add('show');
+    clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove('show'),3200);
+  }
+
+  setInterval(()=>{
+    const el=document.getElementById('stat-tokens');
+    if(el&&Math.random()>0.7)el.textContent=parseInt(el.textContent)+1;
+  },5000);
+
+  renderServiceGrid();
+  renderStaffConsole();
+</script>
+</body>
+</html>

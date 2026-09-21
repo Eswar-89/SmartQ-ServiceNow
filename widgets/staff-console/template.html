@@ -1,0 +1,45 @@
+<div class="staff-container">
+
+  <div class="staff-header">
+    <h2>SmartQ Staff Console</h2>
+    <p>Manage live queues across all service points</p>
+  </div>
+
+  <div class="staff-alert" ng-if="c.data.error">
+    {{c.data.error}}
+  </div>
+
+  <!-- Call Next controls, one per service point -->
+  <div class="call-next-row">
+    <div class="call-next-card" ng-repeat="sp in c.data.servicePoints">
+      <span class="sp-name">{{sp.name}}</span>
+      <button type="button" class="btn-call-next" ng-click="c.callNext(sp.sys_id)">Call Next</button>
+    </div>
+  </div>
+
+  <!-- Active tokens table -->
+  <div class="token-list">
+    <div class="token-row" ng-repeat="t in c.data.tokens" ng-class="'row-' + t.status">
+      <div class="token-col token-number">
+        <strong>{{t.number}}</strong>
+        <span class="entry-tag" ng-if="t.entry_type === 'reserved'">Reserved</span>
+      </div>
+      <div class="token-col">{{t.student}}</div>
+      <div class="token-col">{{t.service_point}}</div>
+      <div class="token-col">
+        <span class="status-badge status-{{t.status}}">{{t.status}}</span>
+      </div>
+      <div class="token-col">Pos {{t.position}} · {{t.wait}} min</div>
+      <div class="token-col token-actions">
+        <button type="button" class="btn-action btn-start" ng-if="t.status === 'called'" ng-click="c.startService(t.sys_id)">Start Service</button>
+        <button type="button" class="btn-action btn-complete" ng-if="t.status === 'in_service'" ng-click="c.completeToken(t.sys_id)">Mark Complete</button>
+        <button type="button" class="btn-action btn-noshow" ng-if="t.status === 'called'" ng-click="c.noShow(t.sys_id)">No Show</button>
+      </div>
+    </div>
+
+    <div class="empty-state" ng-if="c.data.tokens.length === 0">
+      No active tokens right now.
+    </div>
+  </div>
+
+</div>
