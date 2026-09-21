@@ -4,7 +4,7 @@ A ServiceNow-native smart queue management system for campus service points (lib
 
 Built for **HackNow 2026** (ServiceNow University, India) — Problem Statement #15: Smart Queue Management & Virtual Token System.
 
-**Live demo:** https://hem187.github.io/SmartQ-ServiceNow/
+**Live demo:** https://eswar-89.github.io/SmartQ-ServiceNow/
 
 **Demo video:** https://drive.google.com/file/d/1i-CJHVVq6Ws9JyDvG0brYAS0itD1m9AE/view?usp=drive_link
 
@@ -46,6 +46,7 @@ smartq/
 **Roles:** `student`, `staff`, `admin` — table-level ACLs plus row-level scripted ACLs (see `/acls`) so students can never see or modify another student's records.
 
 **Automation:**
+
 - A Business Rule recalculates every waiting token's position and estimated wait whenever the queue changes at a Service Point (`/business-rules`).
 - Flow 1 sends an email notification the instant a token is called.
 - Flow 2 recalculates the entire remaining queue the instant a token completes, calling the shared Script Include so the logic lives in exactly one place.
